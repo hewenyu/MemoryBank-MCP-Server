@@ -30,3 +30,17 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Python ignores
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+build/
+dist/
+*.egg-info/
+pip-log.txt
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
