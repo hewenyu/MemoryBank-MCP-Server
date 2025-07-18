@@ -35,7 +35,7 @@ def get_db():
 # Orchestrator-Architect Tools
 # -------------------
 
-@app.post("/tools/createTaskChain", response_model=List[schemas.Task], tags=["Orchestrator-Architect Tools"])
+@app.post("/tools/createTaskChain", response_model=List[schemas.Task], tags=["Orchestrator-Architect Tools"], operation_id="createTaskChain")
 def create_task_chain(payload: schemas.TaskChainCreate, db: Session = Depends(get_db)):
     """
     Creates one or more tasks with dependencies in a single transaction.
@@ -64,7 +64,7 @@ def create_task_chain(payload: schemas.TaskChainCreate, db: Session = Depends(ge
             
     return created_tasks
 
-@app.post("/tools/getNextReadyTask", response_model=Optional[schemas.NextReadyTask], tags=["Orchestrator-Architect Tools"])
+@app.post("/tools/getNextReadyTask", response_model=Optional[schemas.NextReadyTask], tags=["Orchestrator-Architect Tools"], operation_id="getNextReadyTask")
 def get_next_ready_task(db: Session = Depends(get_db)):
     """
     Gets the next task that is PENDING and has all its dependencies COMPLETED.
@@ -77,7 +77,7 @@ def get_next_ready_task(db: Session = Depends(get_db)):
 # General Agent Tools
 # -------------------
 
-@app.post("/tools/getTaskDetails", response_model=schemas.Task, tags=["General Agent Tools"])
+@app.post("/tools/getTaskDetails", response_model=schemas.Task, tags=["General Agent Tools"], operation_id="getTaskDetails")
 def get_task_details(payload: schemas.TaskIdPayload, db: Session = Depends(get_db)):
     """
     Gets the full details for a specified task.
@@ -102,7 +102,7 @@ def get_task_details(payload: schemas.TaskIdPayload, db: Session = Depends(get_d
 # Transactional Tools (for Developer)
 # -------------------
 
-@app.post("/tools/startWorkOnTask", response_model=schemas.Task, tags=["Transactional Tools"])
+@app.post("/tools/startWorkOnTask", response_model=schemas.Task, tags=["Transactional Tools"], operation_id="startWorkOnTask")
 def start_work_on_task(payload: schemas.TaskIdPayload, db: Session = Depends(get_db)):
     """
     Atomically declares that work is starting on a task.
@@ -121,7 +121,7 @@ def start_work_on_task(payload: schemas.TaskIdPayload, db: Session = Depends(get
         task.dependencies = []
     return task
 
-@app.post("/tools/finishWorkOnTask", response_model=schemas.Task, tags=["Transactional Tools"])
+@app.post("/tools/finishWorkOnTask", response_model=schemas.Task, tags=["Transactional Tools"], operation_id="finishWorkOnTask")
 def finish_work_on_task(payload: schemas.TaskIdPayload, db: Session = Depends(get_db)):
     """
     Atomically declares that work is finished on a task.
@@ -144,7 +144,7 @@ def finish_work_on_task(payload: schemas.TaskIdPayload, db: Session = Depends(ge
 # Context Tools (for Guardian/Developer)
 # -------------------
 
-@app.post("/tools/getSystemPatterns", response_model=schemas.SystemPatterns, tags=["Context Tools"])
+@app.post("/tools/getSystemPatterns", response_model=schemas.SystemPatterns, tags=["Context Tools"], operation_id="getSystemPatterns")
 def get_system_patterns(db: Session = Depends(get_db)):
     """
     Gets the system coding patterns.
@@ -154,7 +154,7 @@ def get_system_patterns(db: Session = Depends(get_db)):
         return schemas.SystemPatterns(patterns="")
     return schemas.SystemPatterns(patterns=context.value)
 
-@app.post("/tools/getActiveContext", response_model=schemas.ActiveContext, tags=["Context Tools"])
+@app.post("/tools/getActiveContext", response_model=schemas.ActiveContext, tags=["Context Tools"], operation_id="getActiveContext")
 def get_active_context(db: Session = Depends(get_db)):
     """
     Gets the active context, such as failure reports.
@@ -164,7 +164,7 @@ def get_active_context(db: Session = Depends(get_db)):
         return schemas.ActiveContext(context="")
     return schemas.ActiveContext(context=context.value)
 
-@app.post("/tools/updateTaskStatus", response_model=schemas.Task, tags=["General Agent Tools"])
+@app.post("/tools/updateTaskStatus", response_model=schemas.Task, tags=["General Agent Tools"], operation_id="updateTaskStatus")
 def update_task_status(payload: schemas.TaskStatusUpdate, db: Session = Depends(get_db)):
     """
     Updates the status of a task.
@@ -187,7 +187,7 @@ def update_task_status(payload: schemas.TaskStatusUpdate, db: Session = Depends(
         task.dependencies = []
     return task
 
-@app.post("/tools/updateSystemPatterns", response_model=schemas.ProjectContext, tags=["Context Tools"])
+@app.post("/tools/updateSystemPatterns", response_model=schemas.ProjectContext, tags=["Context Tools"], operation_id="updateSystemPatterns")
 def update_system_patterns(payload: schemas.SystemPatternsUpdate, db: Session = Depends(get_db)):
     """
     Updates or creates the system coding patterns.
@@ -195,7 +195,7 @@ def update_system_patterns(payload: schemas.SystemPatternsUpdate, db: Session = 
     context_to_update = schemas.ProjectContextCreate(key="system_patterns", value=payload.patterns)
     return crud.create_or_update_project_context(db=db, context=context_to_update)
 
-@app.post("/tools/appendActiveContext", response_model=schemas.ProjectContext, tags=["Context Tools"])
+@app.post("/tools/appendActiveContext", response_model=schemas.ProjectContext, tags=["Context Tools"], operation_id="appendActiveContext")
 def append_active_context(payload: schemas.ActiveContext, db: Session = Depends(get_db)):
     """
     Appends a message to the active context.
@@ -205,7 +205,5 @@ def append_active_context(payload: schemas.ActiveContext, db: Session = Depends(
 # Setup MCP server after all endpoints are defined
 mcp.setup_server()
 
-# Mount MCP endpoints
-from fastapi import APIRouter
-router = APIRouter()
-mcp.mount(router)
+# Mount MCP endpoints to the main app
+mcp.mount()
