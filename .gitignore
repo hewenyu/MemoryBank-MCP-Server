@@ -44,3 +44,4 @@ pip-log.txt
 .pytest_cache/
 .mypy_cache/
 .ipynb_checkpoints/
+memorybank.db
