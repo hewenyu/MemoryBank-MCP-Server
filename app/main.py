@@ -1,5 +1,6 @@
 import json
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi_mcp.server import FastApiMCP
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -14,6 +15,9 @@ app = FastAPI(
     description="A centralized, transactional context management service for AI agents.",
     version="0.1.0",
 )
+
+# Initialize FastAPI MCP server
+mcp = FastApiMCP(app)
 
 # Dependency to get a DB session for each request
 def get_db():
@@ -197,3 +201,11 @@ def append_active_context(payload: schemas.ActiveContext, db: Session = Depends(
     Appends a message to the active context.
     """
     return crud.append_project_context(db=db, key="active_context", content_to_append=payload.context)
+
+# Setup MCP server after all endpoints are defined
+mcp.setup_server()
+
+# Mount MCP endpoints
+from fastapi import APIRouter
+router = APIRouter()
+mcp.mount(router)

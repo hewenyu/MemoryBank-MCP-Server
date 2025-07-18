@@ -19,9 +19,9 @@ graph TD
 
     subgraph "MemoryBank-MCP-Server (FastAPI)"
         direction LR
-        B[API Endpoints <br> (MCP Tools)]
-        C[Business Logic <br> (Service Layer)]
-        D[Data Access Layer <br> (CRUD & ORM)]
+        B["API Endpoints<br/>(MCP Tools)"]
+        C["Business Logic<br/>(Service Layer)"]
+        D["Data Access Layer<br/>(CRUD & ORM)"]
     end
 
     subgraph "Persistent Storage"
