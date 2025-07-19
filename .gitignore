@@ -45,3 +45,5 @@ pip-log.txt
 .mypy_cache/
 .ipynb_checkpoints/
 memorybank.db
+.roo/mcp.json
+.roomodes
